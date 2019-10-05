@@ -1,6 +1,5 @@
 ## Advanced Lane Finding
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
-![Lanes Image](./examples/example_output.jpg)
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
@@ -18,11 +17,11 @@
 ## About the Project
 ---
 
-When we drive, we use our eyes to decide where to go. The lines on the road that show us where the lanes are act as our constant reference for where to steer the vehicle.  Naturally, one of the first things we would like to do in developing a self-driving car is to automatically detect lane lines using an algorithm.
+When we drive, we use our eyes to decide where to go. The lines on the road that show us where the lanes are act as our constant reference for where to steer the vehicle. Naturally, one of the first things we would like to do in developing a self-driving car is to automatically detect lane lines using an algorithm.
 
 In this project lane lines in images are detected using Python and OpenCV. OpenCV means "Open-Source Computer Vision", which is a package that has many useful tools for analyzing images.
 
-<img src="examples/laneLines_thirdPass.jpg" width="480" alt="Combined Image" />
+<img src="examples/test2.jpg" width="480" alt="Combined Image" />
 
 The steps of this project are the following:
 
@@ -82,9 +81,8 @@ Moreover, you can use the pipeline to process your own images or videos in the n
 
 ```
 img_file_name = "<your_image_file_name>"
-img_folder_name = "<your_image_folder_name>"
 
-process_image(img_file_name, img_folder_name)
+process_image(img_file_name)
 ```
 
 ### Videos
