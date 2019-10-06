@@ -43,7 +43,7 @@ Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be 
 `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection. 
 I used the sub-pixel accurate location of the corners.
 
-I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the calibration images using the `cv2.undistort()` function and obtained this result: 
+I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function. I applied this distortion correction to the calibration images using the `cv2.undistort()` function and obtained this result: 
 
 
 Distorted        |  Undistorted
@@ -150,7 +150,7 @@ def measure_offset(img, left_fit, right_fit):
 ```
 I assume that the projected section of the lane is about 30 meters long and 3.7 meters wide. 
 
-I calculated the curvature of the right and left lane boundary separately and took the mean of both values.
+I calculated the curvature of the right and left lane boundary separately and took the mean of both values. For a mean radius higher as 5000 m I concluded that the road is straight.
 
 For the offset I assumed that the center of the image is the center of the car.
 
@@ -180,9 +180,13 @@ Moreover, the lne width is checked. Too small and too wide lanes are omitted.
 
 #### Video Examples
 
+#### Project Video
+
 ![alt text][project_video]
 
 Link to the project video mp4 [link to my video result](./output_videos/project_video_output.mp4)
+
+#### Challenge Video
 
 ![alt text][challenge_video]
 
