@@ -1,6 +1,4 @@
-## Writeup Template
-
-### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
+## Writeup
 
 ---
 
@@ -23,13 +21,16 @@ All code is located in the juypter notebook _advanced_lane_finding.ipynb_
 
 [distorted]: ./examples/calibration1.jpg "Undistorted"
 [undistorted]: ./examples/calibration1_undistorted.jpg "Road Transformed"
+[standard]: ./examples/straight_lines1_standard.jpg "Binary Example"
 [distorted_test]: ./examples/straight_lines_distort.jpg "Undistorted"
 [undistorted_test]: ./examples/straight_lines_undistort.jpg "Road Transformed"
-[image3]: ./examples/binary_combo_example.jpg "Binary Example"
-[image4]: ./examples/warped_straight_lines.jpg "Warp Example"
-[image5]: ./examples/color_fit_lines.jpg "Fit Visual"
-[image6]: ./examples/example_output.jpg "Output"
-[video1]: ./project_video.mp4 "Video"
+[color_selection]: ./examples/straight_lines1_color_selection.jpg "Road Transformed"
+[warp]: ./examples/straight_lines1_warped.jpg "Binary Example"
+[windows]: ./examples/straight_lines1_windows.png "Output"
+[polyfit]: ./examples/color_fit_lines.jpg "Output"
+[unwarped]: ./examples/straight_lines1_unwarped.jpg "Warp"
+[final]: ./examples/straight_lines1_final.jpg "Fit Visual"
+[ss]: ./output_videos/out_project_video.gif "Fit Visual"
 
 ### Camera Calibration
 
@@ -48,23 +49,38 @@ Distorted        |  Undistorted
 
 ### Pipeline (Single Images)
 
+The different steps on the pipeline are demonstrated based on the following test image:
+
+![alt text][standard]
+
 #### 1. Distortion-Corrected Image.
 
 Using the camera matrix and distortion coefficient calculated during the camera calibration we can undistort our test image.
 
-![alt text][image2]
+![alt text][undistorted_test]
 
 #### 2.  Thresholded Binary Image
 
-I used a combination of the HSL and YUC colorspace. Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+The thresholding is performed in the `color_selection()` function.
 
-![alt text][image3]
+I used a combination of the HSL and YUC colorspace. Lane lines can be yellow or white. Therefore, I extracted these two colors from the image.
+
+HSL (white and yellow): 
+For the white color, I chose high light value (205 - 255). I did not filter hue and saturation values.
+For the yellow color, I chose hue between 10 and 40. I chose relatively high saturation and did not filter light value for the yellow color selection.
+
+YUV (only yellow):
+I only used the U-channel to extend the yellow color selection with a threshold of 105.
+
+The result of the color selection is shown below.
+
+![alt text][color_selection]
 
 #### 3. Persepctive Transform
 
 The perspective transform is performed by a function called `warp_image()`.  The `warp_image()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points. 
 
-I chose the hardcode the source and destination points in the following manner:
+I chose to hardcode the source and destination points in the following manner:
 
 | Source        | Destination   | 
 |:-------------:|:-------------:| 
@@ -75,7 +91,7 @@ I chose the hardcode the source and destination points in the following manner:
 
 I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
-![alt text][image4]
+![alt text][warp]
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
@@ -84,6 +100,8 @@ The first step is to create a histogram of lower half of the image. With this hi
 The two most prominent peaks in this histogram will be good indicators of the x-position of the base of the left and right lane line.
 
 The next step is to initiate a Sliding Window Search in the left and right parts which we got from the histogram.
+
+![alt text][windows]
 
 The sliding window is applied in following steps:
 
@@ -95,13 +113,13 @@ The sliding window is applied in following steps:
 6. Once we are done, we separate the points to left and right positions.
 7. We then fit a second degree polynomial using np.polyfit for the points of the left and right boundary respectively.
 
-The result of the polymial fitting is shown below:
+The theory of the polymial fitting is shown below:
 
-![alt text][image5]
+![alt text][polyfit]
 
 Finally, the image  is unwarped again:
 
-![alt text][image5]
+![alt text][unwarped]
 
 #### 5. Add Metrics
 
@@ -109,7 +127,7 @@ The following code show the calculation of the curvature and offset
 
 ```python
 def measure_radius_of_curvature(fit_cr, img):
-    y_eval = img.shape[1] * config.ym_per_pix
+    y_eval = img.shape[1]
     curverad = ((1 + (2*fit_cr[0]*y_eval*config.ym_per_pix + fit_cr[1])**2)**1.5) / np.absolute(2*fit_cr[0])
     return curverad
 
@@ -124,6 +142,7 @@ def measure_offset(img, left_fit, right_fit):
     offset = line_center - vehicle_center
     return offset
 ```
+I assume that the projected section of the lane is about 30 meters long and 3.7 meters wide. 
 
 I calculated the curvature of the right and left lane boundary separately and took the mean of both values.
 
@@ -131,19 +150,35 @@ For the offset I assumed that the center of the image is the center of the car.
 
 #### 6. Final Result
 
-I annotated the intermdiate result from step 4 with the metrics from the last steps and we finally achieve the following result:
+I annotated the intermediate result from step 4 with the metrics from the last steps and we finally achieve the following result:
 
-![alt text][image6]
+![alt text][final]
 
 ---
 
 ### Pipeline (video)
 
-#### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
+The pipeline for videos include the following improvements:
 
-Here's a [link to my video result](./output_videos/project_video_output.mp4)
+1. Search from Prior: In the next frame of video we don't need to do a blind search again for the sliding window approach,
+ but instead you can just search in a margin around the previous lane line position, 
+like in the above image. This only works as long we found lane boundaries in the previous step which passed the sanity checks.
 
-Here's a [link to my video result](./output_videos/challenge_video_output.mp4)
+2. Sanity checks: The sanity checks investigates the plausibility of the found lane lines. 
+For example it is assumed that between frames the curvature and offset only changes slightly. 
+Moreover, the lne width is checked. Too small and too wide lanes are omitted.
+
+3. In case, our current solution failed the sanity checks or we were not able to find a solution, we use the history to construct lane lines.
+
+4. Smoothing: Based on the history and the current solution a weighted average is performed for smoothing.
+
+#### Videos Examples
+
+![alt text][ss]
+
+The solution to the project video [link to my video result](./output_videos/project_video_output.mp4)
+
+The solution to the challenge video [link to my video result](./output_videos/challenge_video_output.mp4)
 
 ---
 
