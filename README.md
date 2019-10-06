@@ -8,7 +8,7 @@
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
-* [Cotent](#content)
+* [Content](#content)
 * [Usage](#usage)
 * [Contributing](#contributing)
 * [License](#license)

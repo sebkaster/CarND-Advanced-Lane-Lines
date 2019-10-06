@@ -15,7 +15,7 @@ The steps of this project are the following:
 * Warp the detected lane boundaries back onto the original image.
 * Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
 
-All code is located in the juypter notebook _advanced_lane_finding.ipynb_
+All code is located in the juypter notebook _advanced_lane_finding.ipynb_.
 
 [//]: # (Image References)
 
@@ -58,7 +58,7 @@ The different steps on the pipeline are demonstrated based on the following test
 
 #### 1. Distortion-Corrected Image.
 
-Using the camera matrix and distortion coefficient calculated during the camera calibration we can undistort our test image.
+Using the camera matrix and distortion coefficient calculated during the camera calibration we can undistort our test image:
 
 ![alt text][undistorted_test]
 
@@ -66,7 +66,7 @@ Using the camera matrix and distortion coefficient calculated during the camera 
 
 The thresholding is performed in the `color_selection()` function.
 
-I used a combination of the HSL and YUC colorspace. Lane lines can be yellow or white. Therefore, I extracted these two colors from the image.
+I used a combination of the HSL and YUV colorspace. Lane lines can be yellow or white. Therefore, I extracted these two colors from the image.
 
 HSL (white and yellow): 
 For the white color, I chose high light value (205 - 255). I did not filter hue and saturation values.
@@ -74,6 +74,8 @@ For the yellow color, I chose hue between 10 and 40. I chose relatively high sat
 
 YUV (only yellow):
 I only used the U-channel to extend the yellow color selection with a threshold of 105.
+
+Moreover, I assumed that all yellow pixels are in the left half and all white pixels in the right half of the image.
 
 The result of the color selection is shown below.
 
@@ -92,11 +94,11 @@ I chose to hardcode the source and destination points in the following manner:
 | 725,  460     | 1065,   0      |
 | 1125, 700   | 1065, 700       |
 
-I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
+I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear approximately parallel in the warped image:
 
 ![alt text][warp]
 
-#### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
+#### 4. Lane Finding
 
 
 The first step is to create a histogram of lower half of the image. With this histogram we are adding up the pixel values along each column in the image. 
@@ -105,11 +107,11 @@ The two most prominent peaks in this histogram will be good indicators of the x-
 ![alt text][histo]
 
 
-The next step is to initiate a Sliding Window Search in the left and right parts which we got from the histogram.
+The next step is to initiate a Sliding Window Search in the left and right parts which we got from the histogram:
 
 ![alt text][windows]
 
-The sliding window is applied in following steps:
+The sliding window is applied by following steps:
 
 1. The left and right start point is calculated based on the histogram.
 2. We then calculate the position of all non-zero x- and non-zero y-pixels.
@@ -123,13 +125,13 @@ The theory of the polynomial fitting is shown below:
 
 ![alt text][polyfit]
 
-Finally, the image  is unwarped again:
+Finally, the image is unwarped again:
 
 ![alt text][unwarped]
 
 #### 5. Add Metrics
 
-The following code show the calculation of the curvature and offset
+The following code shows the calculation of the curvature and offset:
 
 ```python
 def measure_radius_of_curvature(fit_cr, img):
@@ -150,13 +152,13 @@ def measure_offset(img, left_fit, right_fit):
 ```
 I assume that the projected section of the lane is about 30 meters long and 3.7 meters wide. 
 
-I calculated the curvature of the right and left lane boundary separately and took the mean of both values. For a mean radius higher as 5000 m I concluded that the road is straight.
+I calculated the curvature of the right and left lane boundary separately and took the mean of both values. For a mean radius higher than 5000m I concluded that the road is straight.
 
 For the offset I assumed that the center of the image is the center of the car.
 
 #### 6. Final Result
 
-I annotated the intermediate result from step 4 with the metrics from the last steps and we finally achieve the following result:
+I annotated the intermediate result from step 4 with the metrics from the last step and we finally achieve the following result:
 
 ![alt text][final]
 
@@ -166,13 +168,12 @@ I annotated the intermediate result from step 4 with the metrics from the last s
 
 The pipeline for videos include the following improvements:
 
-1. Search from Prior: In the next frame of video we don't need to do a blind search again for the sliding window approach,
- but instead you can just search in a margin around the previous lane line position, 
+1. Search from Prior: In the next frame of video we don't need to do a blind search again for the sliding window approach, but instead we can just search in a margin around the previous lane line position, 
 like in the above image. This only works as long we found lane boundaries in the previous step which passed the sanity checks.
 
-2. Sanity checks: The sanity checks investigates the plausibility of the found lane lines. 
+2. Sanity checks: The sanity checks investigate the plausibility of the found lane lines. 
 For example it is assumed that between frames the curvature and offset only changes slightly. 
-Moreover, the lne width is checked. Too small and too wide lanes are omitted.
+Moreover, the lane width is checked. Too small and too wide lanes are omitted.
 
 3. In case, our current solution failed the sanity checks or we were not able to find a solution, we use the history to construct lane lines.
 
@@ -196,15 +197,15 @@ Link to the challenge video mp4  [link to my video result](./output_videos/chall
 
 ### Discussion
 
-The biggest issue I faced during this task was the selection or extraction of the relevant pixels for lane finding. Finally, I decided to rely on colorspace and 
-do not use any gradient method. The gradient methods extracted too much noise.
+The biggest issue I faced during this task was the selection or extraction of the relevant pixels for lane finding. Finally, I decided to rely on colorspaces and 
+do not use any gradient method. The gradient methods extracted too much not relevant information which makes it very difficult to find the correct position of the lane lines.
 While the presented selection works very well for the project video, it fails in the tunnel section of the challenge video (see image below). 
 
 ![alt text][fail]
 
 I had to use the information from previous frames to construct lane lines for this frames. Here this works quiet good. Nevertheless, it might be dangerous to rely on old frames for more than a few frames.
 
-Methods like histogram equalization or contrast limited adaptive histogram equalization (CLAHE) could solve this problem partly. Nonetheless, it might be quiet difficult to implement this in a robust fashion.
+Methods like histogram equalization or contrast limited adaptive histogram equalization (CLAHE) could solve this problem. Nonetheless, it might be quiet difficult to implement this in a robust fashion.
 
 Moreover, the pipeline performs not well on unseen elements, such as bends, uneven lighting, or lane changing situations.
 
