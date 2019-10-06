@@ -17,7 +17,7 @@
 
 [//]: # (Image References)
 
-[image1]: ./examples/test2.jpg "Undistorted"
+[image1]: ./examples/straight_lines1_final.jpg
 
 
 About the Project
