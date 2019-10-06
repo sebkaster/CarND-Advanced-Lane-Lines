@@ -8,20 +8,26 @@
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
+* [Cotent](#content)
 * [Usage](#usage)
 * [Contributing](#contributing)
 * [License](#license)
 * [Contact](#contact)
 
 
-## About the Project
+[//]: # (Image References)
+
+[image1]: ./examples/test2.jpg "Undistorted"
+
+
+About the Project
 ---
 
 When we drive, we use our eyes to decide where to go. The lines on the road that show us where the lanes are act as our constant reference for where to steer the vehicle. Naturally, one of the first things we would like to do in developing a self-driving car is to automatically detect lane lines using an algorithm.
 
 In this project lane lines in images are detected using Python and OpenCV. OpenCV means "Open-Source Computer Vision", which is a package that has many useful tools for analyzing images.
 
-<img src="examples/test2.jpg" width="480" alt="Combined Image" />
+![alt text][image1]
 
 The steps of this project are the following:
 
@@ -70,23 +76,35 @@ conda install pip
 python -m pip install -r requirements.txt
 ```
 
+<!-- CONTENT -->
+## Content
+
+* camera_cal/: Images used for calibration of the camera.
+* examples/: Images used in this Readme.md or in the writeup.
+* test_images/: Images used in the jupyter notebook to demonstrate the pipeline on single images.
+* test_videos/: Videos used in the jupyter notebook to demonstrate the pipeline on whole videos.
+* output_images/: Intermediate and final results of the pipelines' processing on single images.
+* output_videos/: Final annotated video.
+* _advanced_lane_finding.ipynb_: Jupyter notebook containing the whole code of the project.
+* writeup.md: Documentation of the project. 
+
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-In order to use this project start jupyter by typing `jupyter notebook` in your Anaconda environment. The notebook _P1.ipynb_ shows the implementation of the whole pipeline for single road images and videos. Run the cells to see how this pipeline works. \\
+In order to use this project start jupyter by typing `jupyter notebook` in your Anaconda environment. The notebook _advanced_lane_finding.ipynb_ shows the implementation of the whole pipeline for single road images and videos. Run the cells to see how this pipeline works.
 
 Moreover, you can use the pipeline to process your own images or videos in the notebook as shown below. Tune the configuration parameters to optimize the pipeline on your data samples.
 
 ### Single Image
 
-```
+```python
 img_file_name = "<your_image_file_name>"
 
 process_image(img_file_name)
 ```
 
 ### Videos
-```
+```python
 pv_class = ProcessVideo()
 
 input_video_file_name = "<your_inp_name>"
