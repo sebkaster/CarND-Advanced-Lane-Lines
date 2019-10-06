@@ -19,18 +19,21 @@ All code is located in the juypter notebook _advanced_lane_finding.ipynb_
 
 [//]: # (Image References)
 
-[distorted]: ./examples/calibration1.jpg "Undistorted"
-[undistorted]: ./examples/calibration1_undistorted.jpg "Road Transformed"
-[standard]: ./examples/straight_lines1_standard.jpg "Binary Example"
-[distorted_test]: ./examples/straight_lines_distort.jpg "Undistorted"
-[undistorted_test]: ./examples/straight_lines_undistort.jpg "Road Transformed"
-[color_selection]: ./examples/straight_lines1_color_selection.jpg "Road Transformed"
-[warp]: ./examples/straight_lines1_warped.jpg "Binary Example"
-[windows]: ./examples/straight_lines1_windows.png "Output"
-[polyfit]: ./examples/color_fit_lines.jpg "Output"
-[unwarped]: ./examples/straight_lines1_unwarped.jpg "Warp"
-[final]: ./examples/straight_lines1_final.jpg "Fit Visual"
-[ss]: ./output_videos/out_project_video.gif "Fit Visual"
+[distorted]: ./examples/calibration1.jpg
+[undistorted]: ./examples/calibration1_undistorted.jpg
+[standard]: ./examples/straight_lines1_standard.jpg
+[distorted_test]: ./examples/straight_lines_distort.jpg
+[undistorted_test]: ./examples/straight_lines_undistort.jpg
+[color_selection]: ./examples/straight_lines1_color_selection.jpg
+[warp]: ./examples/straight_lines1_warped.jpg
+[histo]: ./examples/straight_lines1_histo.jpg
+[windows]: ./examples/straight_lines1_windows.png
+[polyfit]: ./examples/color_fit_lines.jpg
+[unwarped]: ./examples/straight_lines1_unwarped.jpg
+[final]: ./examples/straight_lines1_final.jpg
+[project_video]: ./examples/out_project_video.gif
+[challenge_video]: ./examples/out_challenge_video.gif
+[fail]: ./examples/tunnel_fail.jpg
 
 ### Camera Calibration
 
@@ -97,7 +100,10 @@ I verified that my perspective transform was working as expected by drawing the 
 
 
 The first step is to create a histogram of lower half of the image. With this histogram we are adding up the pixel values along each column in the image. 
-The two most prominent peaks in this histogram will be good indicators of the x-position of the base of the left and right lane line.
+The two most prominent peaks in this histogram will be good indicators of the x-position of the base of the left and right lane line. The histogram of the example image is shown below.
+
+![alt text][histo]
+
 
 The next step is to initiate a Sliding Window Search in the left and right parts which we got from the histogram.
 
@@ -113,7 +119,7 @@ The sliding window is applied in following steps:
 6. Once we are done, we separate the points to left and right positions.
 7. We then fit a second degree polynomial using np.polyfit for the points of the left and right boundary respectively.
 
-The theory of the polymial fitting is shown below:
+The theory of the polynomial fitting is shown below:
 
 ![alt text][polyfit]
 
@@ -172,18 +178,30 @@ Moreover, the lne width is checked. Too small and too wide lanes are omitted.
 
 4. Smoothing: Based on the history and the current solution a weighted average is performed for smoothing.
 
-#### Videos Examples
+#### Video Examples
 
-![alt text][ss]
+![alt text][project_video]
 
-The solution to the project video [link to my video result](./output_videos/project_video_output.mp4)
+Link to the project video mp4 [link to my video result](./output_videos/project_video_output.mp4)
 
-The solution to the challenge video [link to my video result](./output_videos/challenge_video_output.mp4)
+![alt text][challenge_video]
+
+Link to the challenge video mp4  [link to my video result](./output_videos/challenge_video_output.mp4)
 
 ---
 
 ### Discussion
 
-#### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
+The biggest issue I faced during this task was the selection or extraction of the relevant pixels for lane finding. Finally, I decided to rely on colorspace and 
+do not use any gradient method. The gradient methods extracted too much noise.
+While the presented selection works very well for the project video, it fails in the tunnel section of the challenge video (see image below). 
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+![alt text][fail]
+
+I had to use the information from previous frames to construct lane lines for this frames. Here this works quiet good. Nevertheless, it might be dangerous to rely on old frames for more than a few frames.
+
+Methods like histogram equalization or contrast limited adaptive histogram equalization (CLAHE) could solve this problem partly. Nonetheless, it might be quiet difficult to implement this in a robust fashion.
+
+Moreover, the pipeline performs not well on unseen elements, such as bends, uneven lighting, or lane changing situations.
+
+To get a more robust lane detection one could use deep neural networks. For example a convolutional neural network (CNN) or a recurrent neural network (RNN). Also a hybrid deep architecture combining CNN and Rnn can be very successful.
