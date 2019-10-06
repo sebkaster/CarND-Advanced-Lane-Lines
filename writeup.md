@@ -107,19 +107,19 @@ The two most prominent peaks in this histogram will be good indicators of the x-
 ![alt text][histo]
 
 
-The next step is to initiate a Sliding Window Search in the left and right parts which we got from the histogram:
+The next step is to initiate a Sliding Window Search (see figure below) in the left and right parts which we got from the histogram.
 
 ![alt text][windows]
 
 The sliding window is applied by following steps:
 
 1. The left and right start point is calculated based on the histogram.
-2. We then calculate the position of all non-zero x- and non-zero y-pixels.
-3. We then start iterating over the windows where we start from points calculate in step 1.
-4. We then identify the non zero pixels in the window we just defined.
-5. We then collect all the indices in the list and decide the center of next window using these points.
-6. Once we are done, we separate the points to left and right positions.
-7. We then fit a second degree polynomial using np.polyfit for the points of the left and right boundary respectively.
+2. Calculate the position of all non-zero x- and non-zero y-pixels.
+3. Start iterating over the windows where we start from points calculate in step 1.
+4. Identify the non zero pixels in the window just defined.
+5. Collect all the indices in the list and set the center of next window using these points.
+6. Separate the points to left and right positions.
+7. Fit a second degree polynomial using np.polyfit for the points of the left and right boundary respectively.
 
 The theory of the polynomial fitting is shown below:
 
@@ -171,9 +171,9 @@ The pipeline for videos include the following improvements:
 1. Search from Prior: In the next frame of video we don't need to do a blind search again for the sliding window approach, but instead we can just search in a margin around the previous lane line position, 
 like in the above image. This only works as long we found lane boundaries in the previous step which passed the sanity checks.
 
-2. Sanity checks: The sanity checks investigate the plausibility of the found lane lines. 
+2. Sanity Checks: The sanity checks investigate the plausibility of the found lane lines. 
 For example it is assumed that between frames the curvature and offset only changes slightly. 
-Moreover, the lane width is checked. Too small and too wide lanes are omitted.
+Moreover, the lane width is checked. Too small and too wide lanes are omitted. Furthermore, the left and right lane line are not allowed to intersect each other.
 
 3. In case, our current solution failed the sanity checks or we were not able to find a solution, we use the history to construct lane lines.
 
@@ -199,7 +199,8 @@ Link to the challenge video mp4  [link to my video result](./output_videos/chall
 
 The biggest issue I faced during this task was the selection or extraction of the relevant pixels for lane finding. Finally, I decided to rely on colorspaces and 
 do not use any gradient method. The gradient methods extracted too much not relevant information which makes it very difficult to find the correct position of the lane lines.
-While the presented selection works very well for the project video, it fails in the tunnel section of the challenge video (see image below). 
+
+While the presented selection works very well for the project video, it fails in the tunnel section of the challenge video:
 
 ![alt text][fail]
 
