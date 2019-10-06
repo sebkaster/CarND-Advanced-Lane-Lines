@@ -62,6 +62,8 @@ Using the camera matrix and distortion coefficient calculated during the camera 
 
 ![alt text][undistorted_test]
 
+This functionality is implemented in the function `undistort_image()`.
+
 #### 2.  Thresholded Binary Image
 
 The thresholding is performed in the `color_selection()` function.
@@ -129,6 +131,8 @@ Finally, the image is unwarped again:
 
 ![alt text][unwarped]
 
+This functionality is implemented in the function`fit_polynomial()`.
+
 #### 5. Add Metrics
 
 The following code shows the calculation of the curvature and offset:
@@ -178,6 +182,8 @@ Moreover, the lane width is checked. Too small and too wide lanes are omitted. F
 3. In case, our current solution failed the sanity checks or we were not able to find a solution, we use the history to construct lane lines.
 
 4. Smoothing: Based on the history and the current solution a weighted average is performed for smoothing.
+
+The code to this changes can be found in the class `ProcessVideo`.
 
 #### Video Examples
 
